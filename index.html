@@ -36,8 +36,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 #finder.on{display:block}
 #vid,#cv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .top{position:absolute;left:0;right:0;top:max(10px,env(safe-area-inset-top));text-align:center;font-size:15px;color:#fff;text-shadow:0 1px 3px #000}
-#guide{position:absolute;left:0;right:0;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 128px);text-align:center;color:#fff;font-size:17px;font-weight:700;text-shadow:0 1px 3px #000}
-#guide.ok{color:var(--ok)}
+#guide{display:none}
 #okpill{display:none;position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 36px);transform:translateX(-50%);background:#e8f6e2;color:#1d4a12;border-radius:999px;padding:6px 16px;font-weight:800;font-size:16px;white-space:nowrap}
 #finder.okframe #okpill{display:block}
 #snd{position:absolute;right:10px;top:max(8px,env(safe-area-inset-top));min-height:36px;padding:0 10px;font-size:13px;background:rgba(0,0,0,.55);color:#fff;border-color:#666}
@@ -53,7 +52,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 
 <section id="opening" class="screen on">
 <h1>日の出ハンター!!</h1>
-<p class="ver">Ver 1.1</p>
+<p class="ver">Ver 1.2</p>
 <div class="card">
 <p>日の出の方角を、スマホのカメラ画面で案内するアプリです。方角が分かったら、撮影はお手持ちのカメラで行ってください。</p>
 </div>
@@ -76,7 +75,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 
 <section id="setup" class="screen">
 <h1 style="font-size:26px">日の出ハンター!!</h1>
-<p class="ver">Ver 1.1</p>
+<p class="ver">Ver 1.2</p>
 <div class="card">
 <p class="small" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -108,7 +107,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <button class="chip" id="snd">音 ON</button>
 <div id="okpill">✓ この方向です</div>
 <div id="tilt"></div>
-<div id="guide">センサー準備中…</div>
+<div id="guide"></div>
 <div id="msg"></div>
 <div class="bottom">
 <div class="info" id="fInfo"></div>
@@ -218,7 +217,7 @@ function beep(n){
   try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
   for(let i=0;i<n;i++){const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime+i*0.22;o.type='sine';o.frequency.value=1320;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.3,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.15);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.16)}}catch(err){}
 }
-function alertHit(){try{if(navigator.vibrate)navigator.vibrate([250,120,250])}catch(err){}if(sound)beep(2)}
+function alertHit(){if(sound)beep(2)}
 function stopAll(){
   cancelAnimationFrame(raf);
   if(oriName)window.removeEventListener(oriName,onOri);
@@ -228,7 +227,7 @@ function stopAll(){
 }
 
 function tape(c,W,H,diff){
-  const bh=56,y0=H-Math.max(14,0)-70-bh,span=80,k=W/span,cx=W/2,lab={0:'北',45:'北東',90:'東',135:'南東',180:'南',225:'南西',270:'西',315:'北西'};
+  const bh=56,y0=H-90-bh,span=80,k=W/span,cx=W/2,lab={0:'北',45:'北東',90:'東',135:'南東',180:'南',225:'南西',270:'西',315:'北西'};
   c.fillStyle='rgba(0,0,0,.55)';c.fillRect(0,y0,W,bh);
   c.textAlign='center';c.font='12px sans-serif';
   const start=Math.floor((heading-span/2)/5)*5;
@@ -243,6 +242,10 @@ function tape(c,W,H,diff){
   if(Math.abs(diff)<span/2){c.beginPath();c.arc(sx,y0+44,8,0,7);c.fill();for(let i=0;i<8;i++){const t=i*Math.PI/4;c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(sx+Math.cos(t)*10,y0+44+Math.sin(t)*10);c.lineTo(sx+Math.cos(t)*13,y0+44+Math.sin(t)*13);c.stroke()}}
   else{const ex=diff>0?W-14:14,d=diff>0?1:-1;c.beginPath();c.moveTo(ex+d*8,y0+44);c.lineTo(ex-d*6,y0+36);c.lineTo(ex-d*6,y0+52);c.closePath();c.fill()}
   c.strokeStyle=onTarget?'#7bd36a':'#ff4d4d';c.lineWidth=3;c.beginPath();c.moveTo(cx,y0-6);c.lineTo(cx,y0+bh+2);c.stroke();
+  const msg=onTarget?'目印の山や建物を覚えてください':(diff>0?'右へ '+Math.round(Math.abs(diff))+'° ▶':'◀ 左へ '+Math.round(Math.abs(diff))+'°');
+  c.font='bold 17px sans-serif';const tw=c.measureText(msg).width;
+  c.fillStyle='rgba(0,0,0,.55)';c.fillRect(cx-tw/2-12,y0-40,tw+24,30);
+  c.fillStyle=onTarget?'#7bd36a':'#fff';c.fillText(msg,cx,y0-19);
   c.textAlign='start';
 }
 function loop(){
@@ -251,8 +254,8 @@ function loop(){
   if(cv.width!==W*dpr){cv.width=W*dpr;cv.height=H*dpr}
   const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
   const g=$('guide');
-  if(!ev){g.className='';g.textContent='日付と現在地を確かめてください';return}
-  if(heading==null)return;
+  if(!ev){$('msg').textContent='日付と現在地を確かめてください';return}
+  if(heading==null){$('fTop').textContent='センサー準備中…';return}
   const ppd=W/FOV,cx=W/2,cy=H/2;
   const P=(az,alt)=>[cx+norm(az-heading)*ppd,cy-(alt-pitch)*ppd];
   const hy0=cy+pitch*ppd;
@@ -271,8 +274,6 @@ function loop(){
   if(!onTarget&&ad<=2){onTarget=true;alertHit()}
   else if(onTarget&&ad>3.5)onTarget=false;
   $('finder').classList.toggle('okframe',onTarget);
-  if(onTarget){g.className='ok';g.textContent='目印の山や建物を覚えてください'}
-  else{g.className='';g.textContent=diff>0?'右へ '+Math.round(ad)+'° ▶':'◀ 左へ '+Math.round(ad)+'°'}
   tape(c,W,H,diff);
   $('fTop').textContent='今の向き '+Math.round(heading)+'°　目標 '+Math.round(ev.az)+'°';
   $('tilt').textContent=pitch>15?'カメラを少し下に向けてください':pitch<-15?'カメラを少し上に向けてください':'';
@@ -292,7 +293,7 @@ $('dToday').onclick=()=>{$('date').value=today();calc()};
 $('snd').onclick=()=>{sound=!sound;$('snd').textContent=sound?'音 ON':'音 OFF';if(sound)beep(1)};
 $('go').onclick=async()=>{
   if(lat==null){$('loc').textContent='現在地がまだ取れていません。少し待ってからもう一度押してください';getLoc();return}
-  show('finder');$('msg').textContent='';try{if(navigator.vibrate)navigator.vibrate(80)}catch(err){}if(sound)beep(1);
+  show('finder');$('msg').textContent='';if(sound)beep(1);
   await startSensor();startCam();
   try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(err){}
   loop();
