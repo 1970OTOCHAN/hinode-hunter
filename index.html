@@ -36,16 +36,16 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 #finder.on{display:block}
 #vid,#cv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .top{position:absolute;left:0;right:0;top:max(10px,env(safe-area-inset-top));text-align:center;font-size:15px;color:#fff;text-shadow:0 1px 3px #000}
-#guide{position:absolute;left:16px;right:16px;top:22%;text-align:center;border-radius:14px;padding:12px;background:rgba(0,0,0,.6);color:var(--gold)}
-#guide b{display:block;font-size:28px;line-height:1.2}
-#guide span{font-size:16px;color:#fff}
-#guide.ok{background:#e8f6e2;color:#1d4a12}
-#guide.ok span{color:#2c5e1e}
-#tilt{position:absolute;left:0;right:0;top:calc(22% + 104px);text-align:center;color:#fff;font-size:15px;text-shadow:0 1px 3px #000}
+#guide{position:absolute;left:0;right:0;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 128px);text-align:center;color:#fff;font-size:17px;font-weight:700;text-shadow:0 1px 3px #000}
+#guide.ok{color:var(--ok)}
+#okpill{display:none;position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 36px);transform:translateX(-50%);background:#e8f6e2;color:#1d4a12;border-radius:999px;padding:6px 16px;font-weight:800;font-size:16px;white-space:nowrap}
+#finder.okframe #okpill{display:block}
+#snd{position:absolute;right:10px;top:max(8px,env(safe-area-inset-top));min-height:36px;padding:0 10px;font-size:13px;background:rgba(0,0,0,.55);color:#fff;border-color:#666}
+#tilt{position:absolute;left:0;right:0;top:40%;text-align:center;color:#fff;font-size:15px;text-shadow:0 1px 3px #000}
 .bottom{position:absolute;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center}
 .bottom .info{flex:1;color:#fff;font-size:14px;text-shadow:0 1px 3px #000}
 .bottom .chip{background:rgba(0,0,0,.55);color:#fff;border-color:#666}
-#msg{position:absolute;left:16px;right:16px;bottom:80px;text-align:center;color:#ffd98a;font-size:14px;text-shadow:0 1px 3px #000}
+#msg{position:absolute;left:16px;right:16px;top:30%;text-align:center;color:#ffd98a;font-size:14px;text-shadow:0 1px 3px #000}
 #finder.okframe{box-shadow:inset 0 0 0 6px var(--ok)}
 </style>
 </head>
@@ -53,9 +53,9 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 
 <section id="opening" class="screen on">
 <h1>日の出ハンター!!</h1>
-<p class="ver">Ver 1.0</p>
+<p class="ver">Ver 1.1</p>
 <div class="card">
-<p>日の出・日の入りの方角を、スマホのカメラ画面で案内するアプリです。方角が分かったら、撮影はお手持ちのカメラで行ってください。</p>
+<p>日の出の方角を、スマホのカメラ画面で案内するアプリです。方角が分かったら、撮影はお手持ちのカメラで行ってください。</p>
 </div>
 <div class="card">
 <p><b>免責</b></p>
@@ -76,11 +76,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 
 <section id="setup" class="screen">
 <h1 style="font-size:26px">日の出ハンター!!</h1>
-<p class="ver">Ver 1.0</p>
-<div class="row" style="margin-bottom:14px">
-<button class="seg on" id="mRise">日の出</button>
-<button class="seg" id="mSet">日の入り</button>
-</div>
+<p class="ver">Ver 1.1</p>
 <div class="card">
 <p class="small" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -92,7 +88,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 </div>
 <div class="card res">
 <div>
-<p class="small" style="margin:0" id="lblTime">日の出</p>
+<p class="small" style="margin:0">日の出</p>
 <div class="big" id="rTime">--:--</div>
 <p class="small" style="margin:10px 0 0">方角</p>
 <div class="big" id="rAz">---°</div>
@@ -109,8 +105,10 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <video id="vid" autoplay playsinline muted></video>
 <canvas id="cv"></canvas>
 <div class="top" id="fTop">今の向き ---°　目標 ---°</div>
-<div id="guide"><b>センサー準備中…</b><span></span></div>
+<button class="chip" id="snd">音 ON</button>
+<div id="okpill">✓ この方向です</div>
 <div id="tilt"></div>
+<div id="guide">センサー準備中…</div>
 <div id="msg"></div>
 <div class="bottom">
 <div class="info" id="fInfo"></div>
@@ -124,8 +122,8 @@ const R=Math.PI/180;
 const $=id=>document.getElementById(id);
 const DIRS=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];
 const FOV=50;
-let mode='rise',lat=null,lng=null,ev=null,path=[];
-let hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
+const mode='rise';let lat=null,lng=null,ev=null,path=[];
+let sound=true,actx=null,hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
 
 function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id)}
 function sunPos(t){
@@ -170,10 +168,9 @@ function drawDial(az){
   s.innerHTML=h;
 }
 function calc(){
-  $('lblTime').textContent=mode==='rise'?'日の出':'日の入り';
   if(lat==null){drawDial(null);return}
   ev=findEvent();
-  if(!ev){$('rTime').textContent='なし';$('rAz').textContent='---°';$('rDir').textContent='この日は'+(mode==='rise'?'日の出':'日の入り')+'がありません';drawDial(null);return}
+  if(!ev){$('rTime').textContent='なし';$('rAz').textContent='---°';$('rDir').textContent='この日は日の出がありません';drawDial(null);return}
   $('rTime').textContent=hm(ev.t);
   $('rAz').textContent=Math.round(ev.az)+'°';
   $('rDir').textContent=dirName(ev.az);
@@ -217,6 +214,11 @@ async function startCam(){
   try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});$('vid').srcObject=stream}
   catch(err){$('msg').textContent='カメラが使えません（方角の案内は使えます）'}
 }
+function beep(n){
+  try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
+  for(let i=0;i<n;i++){const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime+i*0.22;o.type='sine';o.frequency.value=1320;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.3,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.15);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.16)}}catch(err){}
+}
+function alertHit(){try{if(navigator.vibrate)navigator.vibrate([250,120,250])}catch(err){}if(sound)beep(2)}
 function stopAll(){
   cancelAnimationFrame(raf);
   if(oriName)window.removeEventListener(oriName,onOri);
@@ -225,13 +227,31 @@ function stopAll(){
   hx=hy=heading=null;gotSensor=false;onTarget=false;
 }
 
+function tape(c,W,H,diff){
+  const bh=56,y0=H-Math.max(14,0)-70-bh,span=80,k=W/span,cx=W/2,lab={0:'北',45:'北東',90:'東',135:'南東',180:'南',225:'南西',270:'西',315:'北西'};
+  c.fillStyle='rgba(0,0,0,.55)';c.fillRect(0,y0,W,bh);
+  c.textAlign='center';c.font='12px sans-serif';
+  const start=Math.floor((heading-span/2)/5)*5;
+  for(let a=start;a<=heading+span/2;a+=5){
+    const x=cx+(a-heading)*k,aa=((a%360)+360)%360,big=aa%15===0;
+    c.strokeStyle='rgba(255,255,255,.75)';c.lineWidth=1;c.beginPath();c.moveTo(x,y0);c.lineTo(x,y0+(big?14:8));c.stroke();
+    if(aa%45===0){c.fillStyle=aa===0?'#ff8a8a':'#fff';c.font='bold 14px sans-serif';c.fillText(lab[aa],x,y0+30)}
+    else if(big){c.fillStyle='#a9b4c8';c.font='12px sans-serif';c.fillText(aa,x,y0+28)}
+  }
+  const sx=cx+diff*k,col=onTarget?'#7bd36a':'#ff8a3d';
+  c.fillStyle=col;
+  if(Math.abs(diff)<span/2){c.beginPath();c.arc(sx,y0+44,8,0,7);c.fill();for(let i=0;i<8;i++){const t=i*Math.PI/4;c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(sx+Math.cos(t)*10,y0+44+Math.sin(t)*10);c.lineTo(sx+Math.cos(t)*13,y0+44+Math.sin(t)*13);c.stroke()}}
+  else{const ex=diff>0?W-14:14,d=diff>0?1:-1;c.beginPath();c.moveTo(ex+d*8,y0+44);c.lineTo(ex-d*6,y0+36);c.lineTo(ex-d*6,y0+52);c.closePath();c.fill()}
+  c.strokeStyle=onTarget?'#7bd36a':'#ff4d4d';c.lineWidth=3;c.beginPath();c.moveTo(cx,y0-6);c.lineTo(cx,y0+bh+2);c.stroke();
+  c.textAlign='start';
+}
 function loop(){
   raf=requestAnimationFrame(loop);
   const cv=$('cv'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
   if(cv.width!==W*dpr){cv.width=W*dpr;cv.height=H*dpr}
   const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
   const g=$('guide');
-  if(!ev){g.className='';g.innerHTML='<b>計算できません</b><span>日付と現在地を確かめてください</span>';return}
+  if(!ev){g.className='';g.textContent='日付と現在地を確かめてください';return}
   if(heading==null)return;
   const ppd=W/FOV,cx=W/2,cy=H/2;
   const P=(az,alt)=>[cx+norm(az-heading)*ppd,cy-(alt-pitch)*ppd];
@@ -248,22 +268,18 @@ function loop(){
     c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.arc(x,y,16,0,7);c.stroke();
     c.fillStyle=col;c.beginPath();c.arc(x,y,5,0,7);c.fill();
   }
-  if(!onTarget&&ad<=2){onTarget=true;if(navigator.vibrate)navigator.vibrate(250)}
+  if(!onTarget&&ad<=2){onTarget=true;alertHit()}
   else if(onTarget&&ad>3.5)onTarget=false;
   $('finder').classList.toggle('okframe',onTarget);
-  if(onTarget){g.className='ok';g.innerHTML='<b>✓ この方向です</b><span>目印の山や建物を覚えてください</span>'}
-  else{
-    g.className='';
-    const side=diff>0?'右':'左',arrow=diff>0?'→':'←';
-    const head=ad>30?(diff>0?'右へ回って '+arrow:arrow+' 左へ回って'):(diff>0?'もう少し右 '+arrow:arrow+' もう少し左');
-    g.innerHTML='<b>'+head+'</b><span>あと '+Math.round(ad)+'°'+'</span>';
-  }
+  if(onTarget){g.className='ok';g.textContent='目印の山や建物を覚えてください'}
+  else{g.className='';g.textContent=diff>0?'右へ '+Math.round(ad)+'° ▶':'◀ 左へ '+Math.round(ad)+'°'}
+  tape(c,W,H,diff);
   $('fTop').textContent='今の向き '+Math.round(heading)+'°　目標 '+Math.round(ev.az)+'°';
   $('tilt').textContent=pitch>15?'カメラを少し下に向けてください':pitch<-15?'カメラを少し上に向けてください':'';
-  const now=Date.now(),left=ev.t-now,name=mode==='rise'?'日の出':'日の入り';
+  const now=Date.now(),left=ev.t-now,name='日の出';
   let info=name+' '+hm(ev.t);
   if(left>0&&left<86400000){const m=Math.round(left/60000);info+='　あと '+(m>=60?Math.floor(m/60)+'時間'+(m%60)+'分':m+'分')}
-  if(mode==='rise')info+='<br>山があると少し右上から昇ります';
+  info+='<br>山があると少し右上から昇ります';
   $('fInfo').innerHTML=info;
 }
 
@@ -273,11 +289,10 @@ drawDial(null);
 $('date').onchange=calc;
 $('dNew').onclick=()=>{$('date').value=nextNewYear();calc()};
 $('dToday').onclick=()=>{$('date').value=today();calc()};
-$('mRise').onclick=()=>{mode='rise';$('mRise').classList.add('on');$('mSet').classList.remove('on');calc()};
-$('mSet').onclick=()=>{mode='set';$('mSet').classList.add('on');$('mRise').classList.remove('on');calc()};
+$('snd').onclick=()=>{sound=!sound;$('snd').textContent=sound?'音 ON':'音 OFF';if(sound)beep(1)};
 $('go').onclick=async()=>{
   if(lat==null){$('loc').textContent='現在地がまだ取れていません。少し待ってからもう一度押してください';getLoc();return}
-  show('finder');$('msg').textContent='';
+  show('finder');$('msg').textContent='';try{if(navigator.vibrate)navigator.vibrate(80)}catch(err){}if(sound)beep(1);
   await startSensor();startCam();
   try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(err){}
   loop();
