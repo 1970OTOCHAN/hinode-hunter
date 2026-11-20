@@ -7,6 +7,10 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="theme-color" content="#0f1a2e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="日の出ハンター">
 <title>Hinode Hunter!!™ 日の出ハンター</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Bangers&family=Reggae+One&display=swap" rel="stylesheet">
@@ -80,7 +84,7 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 <path d="M0 190 L0 180 Q60 172 120 180 Q190 172 300 179 L300 190 Z" fill="#1b2619"/><circle cx="128" cy="78" r="10" fill="#fffef5"/></svg>
 <div class="ttl"><span class="w"><span class="en">Hinode</span><span class="kana">日の出</span></span><span class="w"><span class="en">Hunter!!</span><span class="kana">ハンター</span></span><span class="tm">™</span></div>
 </div>
-<p class="ver" style="margin:10px 0 0">Ver 1.11</p>
+<p class="ver" style="margin:10px 0 0">Ver 1.12</p>
 <p class="catch">日の出の方角、ロックオン!!</p>
 <p class="sub">現在地の日の出の時刻と方角がわかる</p>
 <div class="warn" style="font-size:16px"><b style="font-size:17px">⚠ 注意</b><br>太陽を直接見ないでください。カメラ越しに見続けることもやめてください。目を傷めるおそれがあります。<br>暗い時間の移動や待機は、足元と周りの安全に気を付けてください。</div>
@@ -102,7 +106,7 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 
 <section id="setup" class="screen">
 <p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span><span class="tm" style="vertical-align:top;margin-left:8px;display:inline-block">™</span></p>
-<p class="ver">Ver 1.11</p>
+<p class="ver">Ver 1.12</p>
 <div class="card">
 <p class="lbl" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -316,6 +320,7 @@ function loop(){
 
 function fitTitle(){const t=document.querySelector('.ttl');if(!t)return;let n=0;t.style.transform='';const W=t.parentElement.clientWidth-8;const sw=[...t.children].reduce((x,c)=>x+c.scrollWidth,0)+12;if(sw>W){t.style.transform='scale('+(W/sw)+')';t.style.transformOrigin='center top'}}
 fitTitle();if(document.fonts)document.fonts.ready.then(fitTitle);window.addEventListener('resize',fitTitle);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 $('agree').onclick=()=>{show('setup');getLoc()};
 $('date').value=nextNewYear();
 drawDial(null);
