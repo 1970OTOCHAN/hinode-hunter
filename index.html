@@ -48,7 +48,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 #guide{display:none}
 #okpill{display:none;position:absolute;left:50%;top:calc(max(6px,env(safe-area-inset-top)) + 86px);transform:translateX(-50%);background:#e8f6e2;color:#1d4a12;border-radius:999px;padding:6px 16px;font-weight:800;font-size:16px;white-space:nowrap}
 #finder.okframe #okpill{display:block}
-#caution{position:absolute;left:0;right:0;top:0;padding:max(6px,env(safe-area-inset-top)) 4px 6px;text-align:center;background:#fff23a;color:#2a1a00;font-size:clamp(16px,6vw,30px);line-height:1.3;font-weight:800;white-space:nowrap;overflow:hidden}
+#caution{position:absolute;left:0;right:0;top:0;padding:max(6px,env(safe-area-inset-top)) 4px 6px;text-align:center;background:#fff23a;color:#2a1a00;font-size:clamp(15px,5.5vw,28px);line-height:1.3;font-weight:800;white-space:nowrap;overflow:hidden}
 #tilt{position:absolute;left:0;right:0;top:40%;text-align:center;color:#fff;font-size:15px;text-shadow:0 1px 3px #000}
 .bottom{position:absolute;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center}
 .bottom .info{flex:1;color:#fff;font-size:14px;text-shadow:0 1px 3px #000}
@@ -124,7 +124,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <video id="vid" autoplay playsinline muted></video>
 <canvas id="cv"></canvas>
 <div class="top" id="fTop">今の向き ---°　目標 ---°</div>
-<div id="caution">⚠ 太陽を直接見ないでください</div>
+<div id="caution">⚠ 太陽を直接見ないでください!!</div>
 <div id="okpill">✓ この方向です</div>
 <div id="tilt"></div>
 <div id="guide"></div>
@@ -284,9 +284,6 @@ function loop(){
   c.setLineDash([]);c.fillStyle='#ffc861';c.font='13px sans-serif';c.fillText('地平線',8,hy0-6);
   c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=1;c.beginPath();c.moveTo(cx,0);c.lineTo(cx,H);c.stroke();
   const diff=norm(ev.az-heading),ad=Math.abs(diff);
-  {const h=40,m=14;c.strokeStyle=onTarget?'#7bd36a':'#ffffff';c.lineWidth=3;c.lineCap='round';c.beginPath();
-  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sy])=>{c.moveTo(cx+sx*h,cy+sy*(h-m));c.lineTo(cx+sx*h,cy+sy*h);c.lineTo(cx+sx*(h-m),cy+sy*h)});
-  c.stroke();c.lineCap='butt';}
   if(ad<70){
     c.setLineDash([4,5]);c.strokeStyle='#ff8a3d';c.lineWidth=2;c.beginPath();
     path.forEach((s,i)=>{const[x,y]=P(s.az,Math.max(s.alt,0));i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();c.setLineDash([]);
