@@ -23,11 +23,11 @@ h1{font-size:34px;line-height:1.1;margin:8px 0 2px;font-weight:800;color:var(--g
 .card p b{font-size:17px}
 .hero{position:relative;margin:calc(-1*max(20px,env(safe-area-inset-top))) -18px 0;aspect-ratio:300/190;overflow:hidden}
 .hero svg{position:absolute;inset:0;width:100%;height:100%}
-.ttl{position:absolute;left:0;right:0;top:4%;display:flex;justify-content:center;gap:12px;white-space:nowrap}
+.ttl{position:absolute;left:0;right:0;top:4%;display:flex;justify-content:center;gap:12px;padding-left:14px;white-space:nowrap}
 .w{display:inline-flex;flex-direction:column;align-items:center;flex:none}
 .en{font-family:'Bangers',sans-serif;font-size:clamp(40px,13vw,58px);letter-spacing:2px;line-height:1;background:linear-gradient(180deg,#fffbe0 0%,#ffe27a 30%,#c99a2e 52%,#fff0a8 62%,#b07a1c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1.5px #3a2205;filter:drop-shadow(0 3px 0 #3a2205)}
 .kana{font-family:'Reggae One',sans-serif;font-size:clamp(15px,4.6vw,20px);letter-spacing:2px;margin-top:5px;line-height:1;color:#d0102a;text-shadow:2px 0 0 #fff,-2px 0 0 #fff,0 2px 0 #fff,0 -2px 0 #fff,1.5px 1.5px 0 #fff,-1.5px 1.5px 0 #fff,1.5px -1.5px 0 #fff,-1.5px -1.5px 0 #fff,0 3px 3px rgba(0,0,0,.45)}
-.tm{font-family:sans-serif;font-weight:800;font-size:clamp(13px,3.6vw,17px);color:#fff3c4;text-shadow:0 1px 2px #3a2205,0 0 3px #3a2205;align-self:flex-start;margin-left:-6px;margin-top:2px;flex:none}
+.tm{font-family:sans-serif;font-weight:800;font-size:clamp(13px,3.6vw,17px);color:#fff3c4;text-shadow:0 1px 2px #3a2205,0 0 3px #3a2205;align-self:flex-start;margin-left:2px;margin-top:2px;flex:none;position:relative;z-index:1}
 .catch{font-size:22px;font-weight:800;color:var(--sun);text-align:center;margin:6px 0 0;line-height:1.3}
 .sub{font-size:16px;text-align:center;margin:4px 0 16px}
 .btn{display:block;width:100%;min-height:52px;border:0;border-radius:12px;background:var(--sun);color:#2a1200;font:800 18px/1 inherit;font-family:inherit;cursor:pointer}
@@ -101,7 +101,7 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 </section>
 
 <section id="setup" class="screen">
-<p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span><span class="tm" style="vertical-align:top">™</span></p>
+<p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span><span class="tm" style="vertical-align:top;margin-left:8px;display:inline-block">™</span></p>
 <p class="ver">Ver 1.10</p>
 <div class="card">
 <p class="lbl" style="margin:0 0 6px">日付</p>
