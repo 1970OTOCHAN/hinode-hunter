@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#0f1a2e">
+<title>日の出ハンター!!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1a2e;--panel:#18263f;--ink:#f4f1ea;--sub:#a9b4c8;--sun:#ff8a3d;--gold:#ffc861;--ok:#7bd36a;--line:#2c3d5c}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:16px/1.6 "M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;overflow-x:clip}
+.screen{display:none;min-height:100%;padding:max(20px,env(safe-area-inset-top)) 18px max(24px,env(safe-area-inset-bottom))}
+.screen.on{display:block}
+h1{font-size:34px;line-height:1.1;margin:8px 0 2px;font-weight:800;color:var(--gold);text-align:center}
+.ver{text-align:center;color:var(--sub);font-size:13px;margin:0 0 16px}
+.card{background:var(--panel);border-radius:14px;padding:14px 16px;margin:0 0 14px}
+.card p{margin:0 0 8px;font-size:14px}
+.btn{display:block;width:100%;min-height:52px;border:0;border-radius:12px;background:var(--sun);color:#2a1200;font:800 18px/1 inherit;font-family:inherit;cursor:pointer}
+.btn.sub{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:700;font-size:15px;min-height:44px}
+.row{display:flex;gap:8px;align-items:center}
+.seg{flex:1;min-height:44px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--sub);font:700 16px inherit;font-family:inherit}
+.seg.on{background:var(--gold);color:#3a2600;border-color:var(--gold)}
+.small{font-size:13px;color:var(--sub)}
+input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:#0b1424;color:var(--ink);padding:0 10px;font-family:inherit}
+.chip{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font:700 14px inherit;font-family:inherit}
+.res{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:center}
+.big{font-size:34px;font-weight:800;line-height:1.1}
+.warn{background:#3a2f12;color:#ffd98a;border-radius:10px;padding:10px 12px;font-size:14px;margin:0 0 14px}
+.foot{text-align:center;color:var(--sub);font-size:12px;margin-top:18px}
+#finder{padding:0;position:fixed;inset:0;background:#000}
+#finder.on{display:block}
+#vid,#cv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.top{position:absolute;left:0;right:0;top:max(10px,env(safe-area-inset-top));text-align:center;font-size:15px;color:#fff;text-shadow:0 1px 3px #000}
+#guide{position:absolute;left:16px;right:16px;top:22%;text-align:center;border-radius:14px;padding:12px;background:rgba(0,0,0,.6);color:var(--gold)}
+#guide b{display:block;font-size:28px;line-height:1.2}
+#guide span{font-size:16px;color:#fff}
+#guide.ok{background:#e8f6e2;color:#1d4a12}
+#guide.ok span{color:#2c5e1e}
+#tilt{position:absolute;left:0;right:0;top:calc(22% + 104px);text-align:center;color:#fff;font-size:15px;text-shadow:0 1px 3px #000}
+.bottom{position:absolute;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center}
+.bottom .info{flex:1;color:#fff;font-size:14px;text-shadow:0 1px 3px #000}
+.bottom .chip{background:rgba(0,0,0,.55);color:#fff;border-color:#666}
+#msg{position:absolute;left:16px;right:16px;bottom:80px;text-align:center;color:#ffd98a;font-size:14px;text-shadow:0 1px 3px #000}
+#finder.okframe{box-shadow:inset 0 0 0 6px var(--ok)}
+</style>
+</head>
+<body>
+
+<section id="opening" class="screen on">
+<h1>日の出ハンター!!</h1>
+<p class="ver">Ver 1.0</p>
+<div class="card">
+<p>日の出・日の入りの方角を、スマホのカメラ画面で案内するアプリです。方角が分かったら、撮影はお手持ちのカメラで行ってください。</p>
+</div>
+<div class="card">
+<p><b>免責</b></p>
+<p>本アプリは無料で提供しており、表示の正確さ・動作を保証するものではありません。本アプリの使用または使用できなかったことにより生じた事故・損害・トラブル等について、作者は一切の責任を負いません。</p>
+<p>太陽を直接見たり、カメラ越しに見続けたりしないでください。暗い時間の移動や待機は、足元と周りの安全に気を付けてご利用ください。</p>
+</div>
+<div class="card">
+<p><b>利用条件</b></p>
+<p>アプリそのものの無断での再配布・改変・販売はご遠慮ください。スクリーンショットやリンクでの紹介は自由です。</p>
+</div>
+<div class="card">
+<p><b>方角の精度について</b></p>
+<p>スマホの方位センサーは数度ずれることがあります。バイクや車、金属の近くでは特にずれやすいので、少し離れて使ってください。</p>
+</div>
+<button class="btn" id="agree">同意してスタート</button>
+<p class="foot">© 2026 1970 OTOCHAN</p>
+</section>
+
+<section id="setup" class="screen">
+<h1 style="font-size:26px">日の出ハンター!!</h1>
+<p class="ver">Ver 1.0</p>
+<div class="row" style="margin-bottom:14px">
+<button class="seg on" id="mRise">日の出</button>
+<button class="seg" id="mSet">日の入り</button>
+</div>
+<div class="card">
+<p class="small" style="margin:0 0 6px">日付</p>
+<div class="row">
+<input type="date" id="date">
+<button class="chip" id="dNew">元日</button>
+<button class="chip" id="dToday">今日</button>
+</div>
+<p class="small" style="margin:12px 0 0" id="loc">現在地を取得しています…</p>
+</div>
+<div class="card res">
+<div>
+<p class="small" style="margin:0" id="lblTime">日の出</p>
+<div class="big" id="rTime">--:--</div>
+<p class="small" style="margin:10px 0 0">方角</p>
+<div class="big" id="rAz">---°</div>
+<p style="margin:0;font-size:15px" id="rDir"></p>
+</div>
+<svg id="dial" viewBox="0 0 140 140" style="width:100%;max-width:150px;justify-self:end"></svg>
+</div>
+<div class="warn">使う前に、スマホを「8の字」に3回ほど大きく振ると、方角のずれが小さくなります。スマホは縦に持って使ってください。</div>
+<button class="btn" id="go">方向を探す</button>
+<p class="foot">© 2026 1970 OTOCHAN</p>
+</section>
+
+<section id="finder" class="screen">
+<video id="vid" autoplay playsinline muted></video>
+<canvas id="cv"></canvas>
+<div class="top" id="fTop">今の向き ---°　目標 ---°</div>
+<div id="guide"><b>センサー準備中…</b><span></span></div>
+<div id="tilt"></div>
+<div id="msg"></div>
+<div class="bottom">
+<div class="info" id="fInfo"></div>
+<button class="chip" id="back">戻る</button>
+</div>
+</section>
+
+<script>
+{
+const R=Math.PI/180;
+const $=id=>document.getElementById(id);
+const DIRS=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];
+const FOV=50;
+let mode='rise',lat=null,lng=null,ev=null,path=[];
+let hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
+
+function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id)}
+function sunPos(t){
+  const d=t/86400000-0.5+2440588-2451545;
+  const M=R*(357.5291+0.98560028*d);
+  const C=R*(1.9148*Math.sin(M)+0.02*Math.sin(2*M)+0.0003*Math.sin(3*M));
+  const L=M+C+R*102.9372+Math.PI,e=R*23.4397;
+  const dec=Math.asin(Math.sin(e)*Math.sin(L));
+  const ra=Math.atan2(Math.sin(L)*Math.cos(e),Math.cos(L));
+  const phi=R*lat,H=R*(280.16+360.9856235*d)+R*lng-ra;
+  const alt=Math.asin(Math.sin(phi)*Math.sin(dec)+Math.cos(phi)*Math.cos(dec)*Math.cos(H));
+  const az=Math.atan2(Math.sin(H),Math.cos(H)*Math.sin(phi)-Math.tan(dec)*Math.cos(phi));
+  return{alt:alt/R,az:((az/R+180)%360+360)%360};
+}
+function findEvent(){
+  const [y,m,d]=$('date').value.split('-').map(Number);
+  const start=new Date(y,m-1,d,0,0,0).getTime(),h0=-0.833,step=300000;
+  let prev=sunPos(start).alt-h0;
+  for(let i=1;i<=288;i++){
+    const t=start+i*step,a=sunPos(t).alt-h0;
+    const hit=mode==='rise'?(prev<0&&a>=0):(prev>=0&&a<0);
+    if(hit){
+      let lo=t-step,hi=t;
+      for(let k=0;k<20;k++){const mid=(lo+hi)/2,am=sunPos(mid).alt-h0;if((mode==='rise')===(am<0))lo=mid;else hi=mid}
+      return{t:hi,az:sunPos(hi).az};
+    }
+    prev=a;
+  }
+  return null;
+}
+function pad(n){return String(n).padStart(2,'0')}
+function hm(t){const x=new Date(t);return x.getHours()+':'+pad(x.getMinutes())}
+function dirName(a){return DIRS[Math.round(a/22.5)%16]}
+function norm(a){return((a+540)%360)-180}
+
+function drawDial(az){
+  const s=$('dial');let h='<circle cx="70" cy="70" r="62" fill="#0b1424" stroke="#2c3d5c" stroke-width="2"/>';
+  for(let i=0;i<36;i++){const a=i*10*R,r1=i%9?56:50;h+=`<line x1="${70+Math.sin(a)*r1}" y1="${70-Math.cos(a)*r1}" x2="${70+Math.sin(a)*60}" y2="${70-Math.cos(a)*60}" stroke="#4a5d80" stroke-width="${i%9?1:2}"/>`}
+  [['北',0],['東',90],['南',180],['西',270]].forEach(([n,a])=>{h+=`<text x="${70+Math.sin(a*R)*40}" y="${70-Math.cos(a*R)*40+5}" text-anchor="middle" font-size="14" fill="${n==='北'?'#ff8a8a':'#a9b4c8'}">${n}</text>`});
+  if(az!=null){const x=70+Math.sin(az*R)*48,y=70-Math.cos(az*R)*48;h+=`<line x1="70" y1="70" x2="${x}" y2="${y}" stroke="#ffc861" stroke-width="3"/><circle cx="${x}" cy="${y}" r="8" fill="#ff8a3d"/>`}
+  h+='<circle cx="70" cy="70" r="4" fill="#f4f1ea"/>';
+  s.innerHTML=h;
+}
+function calc(){
+  $('lblTime').textContent=mode==='rise'?'日の出':'日の入り';
+  if(lat==null){drawDial(null);return}
+  ev=findEvent();
+  if(!ev){$('rTime').textContent='なし';$('rAz').textContent='---°';$('rDir').textContent='この日は'+(mode==='rise'?'日の出':'日の入り')+'がありません';drawDial(null);return}
+  $('rTime').textContent=hm(ev.t);
+  $('rAz').textContent=Math.round(ev.az)+'°';
+  $('rDir').textContent=dirName(ev.az);
+  drawDial(ev.az);
+  path=[];
+  for(let k=0;k<=12;k++){const t=ev.t+(mode==='rise'?k:-k)*600000;path.push(sunPos(t))}
+}
+function nextNewYear(){const n=new Date();return (n.getFullYear()+1)+'-01-01'}
+function today(){const n=new Date();return n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate())}
+function getLoc(){
+  if(!navigator.geolocation){$('loc').textContent='このスマホでは現在地が使えません';return}
+  navigator.geolocation.getCurrentPosition(p=>{
+    lat=p.coords.latitude;lng=p.coords.longitude;
+    $('loc').textContent='現在地：北緯'+lat.toFixed(3)+'° 東経'+lng.toFixed(3)+'°（GPS）';calc();
+  },()=>{$('loc').textContent='現在地を取得できませんでした。位置情報をオンにして、もう一度開いてください';},{enableHighAccuracy:true,timeout:20000,maximumAge:60000});
+}
+
+function onOri(e){
+  let h=null,p=null;
+  if(e.beta!=null&&e.gamma!=null){
+    const cA=Math.cos((e.alpha||0)*R),sA=Math.sin((e.alpha||0)*R),cB=Math.cos(e.beta*R),sB=Math.sin(e.beta*R),cG=Math.cos(e.gamma*R),sG=Math.sin(e.gamma*R);
+    const vx=-(cG*sA*sB+cA*sG),vy=-(sA*sG-cA*cG*sB),vz=-(cB*cG);
+    p=Math.asin(Math.max(-1,Math.min(1,vz)))/R;
+    if(e.absolute===true||oriName==='deviceorientationabsolute')h=((Math.atan2(vx,vy)/R)+360)%360;
+  }
+  if(typeof e.webkitCompassHeading==='number')h=e.webkitCompassHeading;
+  if(h==null)return;
+  gotSensor=true;
+  const k=0.15,sx=Math.sin(h*R),sy=Math.cos(h*R);
+  if(hx==null){hx=sx;hy=sy}else{hx+=(sx-hx)*k;hy+=(sy-hy)*k}
+  heading=((Math.atan2(hx,hy)/R)+360)%360;
+  if(p!=null)pitch+=(p-pitch)*0.2;
+}
+async function startSensor(){
+  try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){const r=await DeviceOrientationEvent.requestPermission();if(r!=='granted'){$('msg').textContent='方位センサーの使用が許可されませんでした';return}}}catch(err){}
+  oriName=('ondeviceorientationabsolute' in window)?'deviceorientationabsolute':'deviceorientation';
+  window.addEventListener(oriName,onOri);
+  setTimeout(()=>{if(!gotSensor)$('msg').textContent='方位センサーが動きません。このスマホでは使えない可能性があります'},4000);
+}
+async function startCam(){
+  try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});$('vid').srcObject=stream}
+  catch(err){$('msg').textContent='カメラが使えません（方角の案内は使えます）'}
+}
+function stopAll(){
+  cancelAnimationFrame(raf);
+  if(oriName)window.removeEventListener(oriName,onOri);
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+  if(wake){wake.release().catch(()=>{});wake=null}
+  hx=hy=heading=null;gotSensor=false;onTarget=false;
+}
+
+function loop(){
+  raf=requestAnimationFrame(loop);
+  const cv=$('cv'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  if(cv.width!==W*dpr){cv.width=W*dpr;cv.height=H*dpr}
+  const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+  const g=$('guide');
+  if(!ev){g.className='';g.innerHTML='<b>計算できません</b><span>日付と現在地を確かめてください</span>';return}
+  if(heading==null)return;
+  const ppd=W/FOV,cx=W/2,cy=H/2;
+  const P=(az,alt)=>[cx+norm(az-heading)*ppd,cy-(alt-pitch)*ppd];
+  const hy0=cy+pitch*ppd;
+  c.setLineDash([8,6]);c.strokeStyle='#ffc861';c.lineWidth=2;
+  c.beginPath();c.moveTo(0,hy0);c.lineTo(W,hy0);c.stroke();
+  c.setLineDash([]);c.fillStyle='#ffc861';c.font='13px sans-serif';c.fillText('地平線',8,hy0-6);
+  c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=1;c.beginPath();c.moveTo(cx,0);c.lineTo(cx,H);c.stroke();
+  const diff=norm(ev.az-heading),ad=Math.abs(diff);
+  if(ad<70){
+    c.setLineDash([4,5]);c.strokeStyle='#ff8a3d';c.lineWidth=2;c.beginPath();
+    path.forEach((s,i)=>{const[x,y]=P(s.az,Math.max(s.alt,0));i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();c.setLineDash([]);
+    const[x,y]=P(ev.az,0),col=onTarget?'#7bd36a':'#ff8a3d';
+    c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.arc(x,y,16,0,7);c.stroke();
+    c.fillStyle=col;c.beginPath();c.arc(x,y,5,0,7);c.fill();
+  }
+  if(!onTarget&&ad<=2){onTarget=true;if(navigator.vibrate)navigator.vibrate(250)}
+  else if(onTarget&&ad>3.5)onTarget=false;
+  $('finder').classList.toggle('okframe',onTarget);
+  if(onTarget){g.className='ok';g.innerHTML='<b>✓ この方向です</b><span>目印の山や建物を覚えてください</span>'}
+  else{
+    g.className='';
+    const side=diff>0?'右':'左',arrow=diff>0?'→':'←';
+    const head=ad>30?(diff>0?'右へ回って '+arrow:arrow+' 左へ回って'):(diff>0?'もう少し右 '+arrow:arrow+' もう少し左');
+    g.innerHTML='<b>'+head+'</b><span>あと '+Math.round(ad)+'°'+'</span>';
+  }
+  $('fTop').textContent='今の向き '+Math.round(heading)+'°　目標 '+Math.round(ev.az)+'°';
+  $('tilt').textContent=pitch>15?'カメラを少し下に向けてください':pitch<-15?'カメラを少し上に向けてください':'';
+  const now=Date.now(),left=ev.t-now,name=mode==='rise'?'日の出':'日の入り';
+  let info=name+' '+hm(ev.t);
+  if(left>0&&left<86400000){const m=Math.round(left/60000);info+='　あと '+(m>=60?Math.floor(m/60)+'時間'+(m%60)+'分':m+'分')}
+  if(mode==='rise')info+='<br>山があると少し右上から昇ります';
+  $('fInfo').innerHTML=info;
+}
+
+$('agree').onclick=()=>{show('setup');getLoc()};
+$('date').value=nextNewYear();
+drawDial(null);
+$('date').onchange=calc;
+$('dNew').onclick=()=>{$('date').value=nextNewYear();calc()};
+$('dToday').onclick=()=>{$('date').value=today();calc()};
+$('mRise').onclick=()=>{mode='rise';$('mRise').classList.add('on');$('mSet').classList.remove('on');calc()};
+$('mSet').onclick=()=>{mode='set';$('mSet').classList.add('on');$('mRise').classList.remove('on');calc()};
+$('go').onclick=async()=>{
+  if(lat==null){$('loc').textContent='現在地がまだ取れていません。少し待ってからもう一度押してください';getLoc();return}
+  show('finder');$('msg').textContent='';
+  await startSensor();startCam();
+  try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(err){}
+  loop();
+};
+$('back').onclick=()=>{stopAll();show('setup')};
+}
+</script>
+</body>
+</html>
