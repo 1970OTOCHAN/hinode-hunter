@@ -73,7 +73,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <path d="M0 190 L0 180 Q60 172 120 180 Q190 172 300 179 L300 190 Z" fill="#1b2619"/><circle cx="128" cy="78" r="10" fill="#fffef5"/></svg>
 <div class="ttl"><span class="w"><span class="en">Hinode</span><span class="kana">日の出</span></span><span class="w"><span class="en">Hunter!!</span><span class="kana">ハンター</span></span></div>
 </div>
-<p class="ver" style="margin:10px 0 0">Ver 1.6</p>
+<p class="ver" style="margin:10px 0 0">Ver 1.7</p>
 <p class="catch">日の出の方角、ロックオン!!</p>
 <p class="sub">現在地の日の出の時刻と方角がわかる</p>
 <div class="warn" style="font-size:16px"><b style="font-size:17px">⚠ 注意</b><br>太陽を直接見ないでください。カメラ越しに見続けることもやめてください。目を傷めるおそれがあります。<br>暗い時間の移動や待機は、足元と周りの安全に気を付けてください。</div>
@@ -95,7 +95,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 
 <section id="setup" class="screen">
 <p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span></p>
-<p class="ver">Ver 1.6</p>
+<p class="ver">Ver 1.7</p>
 <div class="card">
 <p class="small" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -284,6 +284,9 @@ function loop(){
   c.setLineDash([]);c.fillStyle='#ffc861';c.font='13px sans-serif';c.fillText('地平線',8,hy0-6);
   c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=1;c.beginPath();c.moveTo(cx,0);c.lineTo(cx,H);c.stroke();
   const diff=norm(ev.az-heading),ad=Math.abs(diff);
+  {const h=40,m=14;c.strokeStyle=onTarget?'#7bd36a':'#ffffff';c.lineWidth=3;c.lineCap='round';c.beginPath();
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sy])=>{c.moveTo(cx+sx*h,cy+sy*(h-m));c.lineTo(cx+sx*h,cy+sy*h);c.lineTo(cx+sx*(h-m),cy+sy*h)});
+  c.stroke();c.lineCap='butt';}
   if(ad<70){
     c.setLineDash([4,5]);c.strokeStyle='#ff8a3d';c.lineWidth=2;c.beginPath();
     path.forEach((s,i)=>{const[x,y]=P(s.az,Math.max(s.alt,0));i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();c.setLineDash([]);
