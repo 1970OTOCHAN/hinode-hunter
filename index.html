@@ -73,7 +73,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <path d="M0 190 L0 180 Q60 172 120 180 Q190 172 300 179 L300 190 Z" fill="#1b2619"/><circle cx="128" cy="78" r="10" fill="#fffef5"/></svg>
 <div class="ttl"><span class="w"><span class="en">Hinode</span><span class="kana">日の出</span></span><span class="w"><span class="en">Hunter!!</span><span class="kana">ハンター</span></span></div>
 </div>
-<p class="ver" style="margin:10px 0 0">Ver 1.3</p>
+<p class="ver" style="margin:10px 0 0">Ver 1.4</p>
 <p class="catch">日の出の方角、ロックオン!!</p>
 <p class="sub">現在地の日の出の時刻と方角がわかる</p>
 <div class="card">
@@ -95,7 +95,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 
 <section id="setup" class="screen">
 <p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span></p>
-<p class="ver">Ver 1.3</p>
+<p class="ver">Ver 1.4</p>
 <div class="card">
 <p class="small" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -142,7 +142,7 @@ const $=id=>document.getElementById(id);
 const DIRS=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];
 const FOV=50;
 const mode='rise';let lat=null,lng=null,ev=null,path=[];
-let sound=true,actx=null,hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
+let rp=0,lastT=0,sound=true,actx=null,hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
 
 function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id)}
 function sunPos(t){
@@ -288,8 +288,12 @@ function loop(){
     c.setLineDash([4,5]);c.strokeStyle='#ff8a3d';c.lineWidth=2;c.beginPath();
     path.forEach((s,i)=>{const[x,y]=P(s.az,Math.max(s.alt,0));i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();c.setLineDash([]);
     const[x,y]=P(ev.az,0),col=onTarget?'#7bd36a':'#ff8a3d';
-    c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.arc(x,y,16,0,7);c.stroke();
-    c.fillStyle=col;c.beginPath();c.arc(x,y,5,0,7);c.fill();
+    const now2=performance.now(),dt=lastT?Math.min(0.1,(now2-lastT)/1000):0;lastT=now2;
+    const per=onTarget?1.0:ad>20?0:1.2+(ad-2)/18*1.8;
+    let a0=1;
+    if(per>0){rp=(rp+dt/per)%1;for(const o of [0,0.5]){const f=(rp+o)%1;c.globalAlpha=0.9*(1-f);c.strokeStyle=col;c.lineWidth=4-3*f;c.beginPath();c.arc(x,y,16+28*f,0,7);c.stroke()}a0=0.7+0.3*Math.cos(rp*Math.PI*2)}
+    c.globalAlpha=a0;c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.arc(x,y,16,0,7);c.stroke();
+    c.fillStyle=col;c.beginPath();c.arc(x,y,5,0,7);c.fill();c.globalAlpha=1;
   }
   if(!onTarget&&ad<=2){onTarget=true;alertHit()}
   else if(onTarget&&ad>3.5)onTarget=false;
