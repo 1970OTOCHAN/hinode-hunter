@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#0f1a2e">
 <title>日の出ハンター!!</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Bangers&family=Reggae+One&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0f1a2e;--panel:#18263f;--ink:#f4f1ea;--sub:#a9b4c8;--sun:#ff8a3d;--gold:#ffc861;--ok:#7bd36a;--line:#2c3d5c}
 *{box-sizing:border-box;min-width:0}
@@ -19,7 +19,16 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:16px/1
 h1{font-size:34px;line-height:1.1;margin:8px 0 2px;font-weight:800;color:var(--gold);text-align:center}
 .ver{text-align:center;color:var(--sub);font-size:13px;margin:0 0 16px}
 .card{background:var(--panel);border-radius:14px;padding:14px 16px;margin:0 0 14px}
-.card p{margin:0 0 8px;font-size:14px}
+.card p{margin:0 0 8px;font-size:16px}
+.card p b{font-size:17px}
+.hero{position:relative;margin:calc(-1*max(20px,env(safe-area-inset-top))) -18px 0;aspect-ratio:300/190;overflow:hidden}
+.hero svg{position:absolute;inset:0;width:100%;height:100%}
+.ttl{position:absolute;left:0;right:0;top:4%;display:flex;justify-content:center;gap:12px;white-space:nowrap}
+.w{display:inline-flex;flex-direction:column;align-items:center;flex:none}
+.en{font-family:'Bangers',sans-serif;font-size:clamp(40px,13vw,58px);letter-spacing:2px;line-height:1;background:linear-gradient(180deg,#fffbe0 0%,#ffe27a 30%,#c99a2e 52%,#fff0a8 62%,#b07a1c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1.5px #3a2205;filter:drop-shadow(0 3px 0 #3a2205)}
+.kana{font-family:'Reggae One',sans-serif;font-size:clamp(15px,4.6vw,20px);letter-spacing:2px;margin-top:5px;line-height:1;color:#d0102a;text-shadow:2px 0 0 #fff,-2px 0 0 #fff,0 2px 0 #fff,0 -2px 0 #fff,1.5px 1.5px 0 #fff,-1.5px 1.5px 0 #fff,1.5px -1.5px 0 #fff,-1.5px -1.5px 0 #fff,0 3px 3px rgba(0,0,0,.45)}
+.catch{font-size:22px;font-weight:800;color:var(--sun);text-align:center;margin:6px 0 0;line-height:1.3}
+.sub{font-size:16px;text-align:center;margin:4px 0 16px}
 .btn{display:block;width:100%;min-height:52px;border:0;border-radius:12px;background:var(--sun);color:#2a1200;font:800 18px/1 inherit;font-family:inherit;cursor:pointer}
 .btn.sub{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:700;font-size:15px;min-height:44px}
 .row{display:flex;gap:8px;align-items:center}
@@ -51,11 +60,22 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <body>
 
 <section id="opening" class="screen on">
-<h1>日の出ハンター!!</h1>
-<p class="ver">Ver 1.2</p>
-<div class="card">
-<p>日の出の方角を、スマホのカメラ画面で案内するアプリです。方角が分かったら、撮影はお手持ちのカメラで行ってください。</p>
+<div class="hero"><svg viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+<linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a64a8"/><stop offset=".45" stop-color="#c9b48a"/><stop offset=".75" stop-color="#f0a24e"/><stop offset="1" stop-color="#e2783a"/></linearGradient>
+<radialGradient id="gl" cx="128" cy="78" r="70" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fffbe6"/><stop offset=".25" stop-color="#ffe9a0" stop-opacity=".9"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>
+<linearGradient id="mt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b98a6a"/><stop offset=".55" stop-color="#7c5a6c"/><stop offset="1" stop-color="#4c3b5c"/></linearGradient></defs>
+<rect width="300" height="190" fill="url(#sk)"/><g fill="#fff6cf" opacity=".75"><path d="M128 78 L237.7 70.3 L237.7 85.7 Z"/><path d="M128 78 L185.8 94.1 L184.3 98.7 Z"/><path d="M128 78 L226.9 126.2 L219.2 139.5 Z"/><path d="M128 78 L170.0 120.8 L166.4 124.1 Z"/><path d="M128 78 L189.5 169.2 L176.2 176.9 Z"/><path d="M128 78 L142.9 136.1 L138.3 137.1 Z"/><path d="M128 78 L135.7 187.7 L120.3 187.7 Z"/><path d="M128 78 L111.9 135.8 L107.3 134.3 Z"/><path d="M128 78 L79.8 176.9 L66.5 169.2 Z"/><path d="M128 78 L85.2 120.0 L81.9 116.4 Z"/><path d="M128 78 L36.8 139.5 L29.1 126.2 Z"/><path d="M128 78 L69.9 92.9 L68.9 88.3 Z"/><path d="M128 78 L18.3 85.7 L18.3 70.3 Z"/><path d="M128 78 L70.2 61.9 L71.7 57.3 Z"/><path d="M128 78 L29.1 29.8 L36.8 16.5 Z"/><path d="M128 78 L86.0 35.2 L89.6 31.9 Z"/><path d="M128 78 L66.5 -13.2 L79.8 -20.9 Z"/><path d="M128 78 L113.1 19.9 L117.7 18.9 Z"/><path d="M128 78 L120.3 -31.7 L135.7 -31.7 Z"/><path d="M128 78 L144.1 20.2 L148.7 21.7 Z"/><path d="M128 78 L176.2 -20.9 L189.5 -13.2 Z"/><path d="M128 78 L170.8 36.0 L174.1 39.6 Z"/><path d="M128 78 L219.2 16.5 L226.9 29.8 Z"/><path d="M128 78 L186.1 63.1 L187.1 67.7 Z"/></g><circle cx="128" cy="78" r="70" fill="url(#gl)"/>
+<path d="M30 112 q12-8 26-3 q8-7 20-2 q10 0 12 6 z" fill="#d98a5a" opacity=".85"/><path d="M20 132 q16-7 32-1 q14-5 26 2 z" fill="#c9784e" opacity=".8"/>
+<path d="M0 170 L0 150 Q60 140 100 118 L150 82 Q164 72 178 82 L232 120 Q270 140 300 146 L300 170 Z" fill="url(#mt)"/>
+<path d="M150 82 Q164 72 178 82 L194 94 L184 92 L176 100 L168 92 L160 101 L152 93 L140 97 Z" fill="#f3eef2"/>
+<path d="M150 82 L100 118 Q60 140 0 150 L0 158 Q70 146 112 122 L152 90 Z" fill="#e0a57c" opacity=".55"/>
+<path d="M0 190 L0 170 Q20 162 34 168 L40 160 L46 168 Q70 160 92 168 L98 158 L104 168 Q140 160 170 168 L176 159 L182 168 Q220 160 246 168 L252 158 L258 168 Q280 162 300 166 L300 190 Z" fill="#2c3a2a"/>
+<path d="M0 190 L0 180 Q60 172 120 180 Q190 172 300 179 L300 190 Z" fill="#1b2619"/><circle cx="128" cy="78" r="10" fill="#fffef5"/></svg>
+<div class="ttl"><span class="w"><span class="en">Hinode</span><span class="kana">日の出</span></span><span class="w"><span class="en">Hunter!!</span><span class="kana">ハンター</span></span></div>
 </div>
+<p class="ver" style="margin:10px 0 0">Ver 1.3</p>
+<p class="catch">日の出の方角、ロックオン!!</p>
+<p class="sub">現在地の日の出の時刻と方角がわかる</p>
 <div class="card">
 <p><b>免責</b></p>
 <p>本アプリは無料で提供しており、表示の正確さ・動作を保証するものではありません。本アプリの使用または使用できなかったことにより生じた事故・損害・トラブル等について、作者は一切の責任を負いません。</p>
@@ -74,8 +94,8 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 </section>
 
 <section id="setup" class="screen">
-<h1 style="font-size:26px">日の出ハンター!!</h1>
-<p class="ver">Ver 1.2</p>
+<p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span></p>
+<p class="ver">Ver 1.3</p>
 <div class="card">
 <p class="small" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -284,6 +304,8 @@ function loop(){
   $('fInfo').innerHTML=info;
 }
 
+function fitTitle(){const t=document.querySelector('.ttl');if(!t)return;let n=0;t.style.transform='';const W=t.parentElement.clientWidth-8;const sw=[...t.children].reduce((x,c)=>x+c.scrollWidth,0)+12;if(sw>W){t.style.transform='scale('+(W/sw)+')';t.style.transformOrigin='center top'}}
+fitTitle();if(document.fonts)document.fonts.ready.then(fitTitle);window.addEventListener('resize',fitTitle);
 $('agree').onclick=()=>{show('setup');getLoc()};
 $('date').value=nextNewYear();
 drawDial(null);
