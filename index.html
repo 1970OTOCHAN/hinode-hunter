@@ -44,11 +44,11 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 #finder{padding:0;position:fixed;inset:0;background:#000}
 #finder.on{display:block}
 #vid,#cv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.top{position:absolute;left:0;right:0;top:max(10px,env(safe-area-inset-top));text-align:center;font-size:15px;color:#fff;text-shadow:0 1px 3px #000}
+.top{position:absolute;left:0;right:0;top:calc(max(6px,env(safe-area-inset-top)) + 36px);text-align:center;font-size:15px;color:#fff;text-shadow:0 1px 3px #000}
 #guide{display:none}
-#okpill{display:none;position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 36px);transform:translateX(-50%);background:#e8f6e2;color:#1d4a12;border-radius:999px;padding:6px 16px;font-weight:800;font-size:16px;white-space:nowrap}
+#okpill{display:none;position:absolute;left:50%;top:calc(max(6px,env(safe-area-inset-top)) + 70px);transform:translateX(-50%);background:#e8f6e2;color:#1d4a12;border-radius:999px;padding:6px 16px;font-weight:800;font-size:16px;white-space:nowrap}
 #finder.okframe #okpill{display:block}
-#snd{position:absolute;right:10px;top:max(8px,env(safe-area-inset-top));min-height:36px;padding:0 10px;font-size:13px;background:rgba(0,0,0,.55);color:#fff;border-color:#666}
+#caution{position:absolute;left:0;right:0;top:0;padding:max(6px,env(safe-area-inset-top)) 10px 6px;text-align:center;background:rgba(255,200,60,.92);color:#3a2600;font-size:15px;font-weight:800}
 #tilt{position:absolute;left:0;right:0;top:40%;text-align:center;color:#fff;font-size:15px;text-shadow:0 1px 3px #000}
 .bottom{position:absolute;left:12px;right:12px;bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:10px;align-items:center}
 .bottom .info{flex:1;color:#fff;font-size:14px;text-shadow:0 1px 3px #000}
@@ -73,13 +73,13 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <path d="M0 190 L0 180 Q60 172 120 180 Q190 172 300 179 L300 190 Z" fill="#1b2619"/><circle cx="128" cy="78" r="10" fill="#fffef5"/></svg>
 <div class="ttl"><span class="w"><span class="en">Hinode</span><span class="kana">日の出</span></span><span class="w"><span class="en">Hunter!!</span><span class="kana">ハンター</span></span></div>
 </div>
-<p class="ver" style="margin:10px 0 0">Ver 1.4</p>
+<p class="ver" style="margin:10px 0 0">Ver 1.5</p>
 <p class="catch">日の出の方角、ロックオン!!</p>
 <p class="sub">現在地の日の出の時刻と方角がわかる</p>
+<div class="warn" style="font-size:16px"><b style="font-size:17px">⚠ 注意</b><br>太陽を直接見ないでください。カメラ越しに見続けることもやめてください。目を傷めるおそれがあります。<br>暗い時間の移動や待機は、足元と周りの安全に気を付けてください。</div>
 <div class="card">
 <p><b>免責</b></p>
 <p>本アプリは無料で提供しており、表示の正確さ・動作を保証するものではありません。本アプリの使用または使用できなかったことにより生じた事故・損害・トラブル等について、作者は一切の責任を負いません。</p>
-<p>太陽を直接見たり、カメラ越しに見続けたりしないでください。暗い時間の移動や待機は、足元と周りの安全に気を付けてご利用ください。</p>
 </div>
 <div class="card">
 <p><b>利用条件</b></p>
@@ -95,7 +95,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 
 <section id="setup" class="screen">
 <p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span></p>
-<p class="ver">Ver 1.4</p>
+<p class="ver">Ver 1.5</p>
 <div class="card">
 <p class="small" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -124,7 +124,7 @@ input[type=date]{flex:1;font-size:16px;min-height:44px;border-radius:10px;border
 <video id="vid" autoplay playsinline muted></video>
 <canvas id="cv"></canvas>
 <div class="top" id="fTop">今の向き ---°　目標 ---°</div>
-<button class="chip" id="snd">音 ON</button>
+<div id="caution">⚠ 太陽を直接見ないでください</div>
 <div id="okpill">✓ この方向です</div>
 <div id="tilt"></div>
 <div id="guide"></div>
@@ -142,7 +142,7 @@ const $=id=>document.getElementById(id);
 const DIRS=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];
 const FOV=50;
 const mode='rise';let lat=null,lng=null,ev=null,path=[];
-let rp=0,lastT=0,sound=true,actx=null,hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
+const sound=true;let rp=0,lastT=0,actx=null,hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
 
 function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id)}
 function sunPos(t){
@@ -316,7 +316,6 @@ drawDial(null);
 $('date').onchange=calc;
 $('dNew').onclick=()=>{$('date').value=nextNewYear();calc()};
 $('dToday').onclick=()=>{$('date').value=today();calc()};
-$('snd').onclick=()=>{sound=!sound;$('snd').textContent=sound?'音 ON':'音 OFF';if(sound)beep(1)};
 $('go').onclick=async()=>{
   if(lat==null){$('loc').textContent='現在地がまだ取れていません。少し待ってからもう一度押してください';getLoc();return}
   show('finder');$('msg').textContent='';if(sound)beep(1);
