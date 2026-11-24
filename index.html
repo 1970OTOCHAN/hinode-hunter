@@ -66,6 +66,15 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 #rotate svg{width:72px;height:72px}
 @media (orientation:landscape) and (max-height:520px){#rotate{display:flex}}
 #rotate.tilt{display:flex}
+/* Ver 1.15：方向を探す画面は横持ちでも使える */
+body.fnd #rotate{display:none!important}
+#rotateF{display:none;position:fixed;inset:0;z-index:99;background:#0f1a2e;color:#f4f1ea;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;font-size:20px;font-weight:800;padding:0 20px}
+@media (orientation:landscape) and (max-height:520px){body.fnd #rotateF{display:flex}}
+.chip span{display:inline-block;transition:transform .25s}
+body[data-rot="90"] .chip span{transform:rotate(90deg)}
+body[data-rot="-90"] .chip span{transform:rotate(-90deg)}
+body[data-rot="90"] #fTop,body[data-rot="-90"] #fTop,body[data-rot="90"] .bottom .info,body[data-rot="-90"] .bottom .info,body[data-rot="90"] #caution,body[data-rot="-90"] #caution,body[data-rot="90"] #tilt,body[data-rot="-90"] #tilt{visibility:hidden}
+body[data-rot="90"] #finder.okframe #okpill,body[data-rot="-90"] #finder.okframe #okpill{display:none}
 </style>
 </head>
 <body>
@@ -85,7 +94,7 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 <path d="M0 190 L0 180 Q60 172 120 180 Q190 172 300 179 L300 190 Z" fill="#1b2619"/><circle cx="128" cy="78" r="10" fill="#fffef5"/></svg>
 <div class="ttl"><span class="w"><span class="en">Hinode</span><span class="kana">日の出</span></span><span class="w"><span class="en">Hunter!!</span><span class="kana">ハンター</span></span><span class="tm">™</span></div>
 </div>
-<p class="ver" style="margin:10px 0 0">Ver 1.14</p>
+<p class="ver" style="margin:10px 0 0">Ver 1.15</p>
 <p class="catch">日の出の方角、ロックオン!!</p>
 <p class="sub">現在地の日の出の時刻と方角がわかる</p>
 <div class="warn" style="font-size:16px"><b style="font-size:17px">⚠ 注意</b><br>太陽を直接見ないでください。カメラ越しに見続けることもやめてください。目を傷めるおそれがあります。<br>暗い時間の移動や待機は、足元と周りの安全に気を付けてください。</div>
@@ -107,7 +116,7 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 
 <section id="setup" class="screen">
 <p style="text-align:center;margin:4px 0 2px"><span class="en" style="font-size:38px">Hinode Hunter!!</span><span class="tm" style="vertical-align:top;margin-left:8px;display:inline-block">™</span></p>
-<p class="ver">Ver 1.14</p>
+<p class="ver">Ver 1.15</p>
 <div class="card">
 <p class="lbl" style="margin:0 0 6px">日付</p>
 <div class="row">
@@ -126,11 +135,12 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 </div>
 <svg id="dial" viewBox="0 0 140 140" style="width:100%;max-width:150px;justify-self:end"></svg>
 </div>
-<div class="warn">使う前に、スマホを「8の字」に3回ほど大きく振ると、方角のずれが小さくなります。スマホは縦に持って使ってください。</div>
+<div class="warn">使う前に、スマホを「8の字」に3回ほど大きく振ると、方角のずれが小さくなります。スマホは縦に持っても、横に持っても使えます。</div>
 <button class="btn" id="go">方向を探す</button>
 <p class="foot">Hinode Hunter™ © 2026 1970 OTOCHAN</p>
 </section>
 
+<div id="rotateF">画面の自動回転をオフにしてください<span style="font-size:14px;font-weight:400;color:#a9b4c8">（横に持っても使えます）</span></div>
 <section id="finder" class="screen">
 <video id="vid" autoplay playsinline muted></video>
 <canvas id="cv"></canvas>
@@ -142,7 +152,7 @@ input[type=date]{flex:1;font-size:18px;font-weight:800;min-height:44px;border-ra
 <div id="msg"></div>
 <div class="bottom">
 <div class="info" id="fInfo"></div>
-<button class="chip" id="back">戻る</button>
+<button class="chip" id="back"><span>戻る</span></button>
 </div>
 </section>
 
@@ -153,9 +163,9 @@ const $=id=>document.getElementById(id);
 const DIRS=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];
 const FOV=50;
 const mode='rise';let lat=null,lng=null,ev=null,path=[];
-const sound=true;let rp=0,lastT=0,actx=null,hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null;
+const sound=true;let rp=0,lastT=0,actx=null,hx=null,hy=null,heading=null,pitch=0,gotSensor=false,onTarget=false,stream=null,raf=0,wake=null,oriName=null,roll=0,land=0;
 
-function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id)}
+function show(id){for(const s of document.querySelectorAll('.screen'))s.classList.toggle('on',s.id===id);document.body.classList.toggle('fnd',id==='finder')}
 function sunPos(t){
   const d=t/86400000-0.5+2440588-2451545;
   const M=R*(357.5291+0.98560028*d);
@@ -219,14 +229,17 @@ function getLoc(){
 }
 
 function onOri(e){
-  let h=null,p=null;
+  let h=null,p=null,al=e.alpha;
+  const ios=typeof e.webkitCompassHeading==='number';
+  if(ios)al=360-e.webkitCompassHeading;
   if(e.beta!=null&&e.gamma!=null){
-    const cA=Math.cos((e.alpha||0)*R),sA=Math.sin((e.alpha||0)*R),cB=Math.cos(e.beta*R),sB=Math.sin(e.beta*R),cG=Math.cos(e.gamma*R),sG=Math.sin(e.gamma*R);
+    const cA=Math.cos((al||0)*R),sA=Math.sin((al||0)*R),cB=Math.cos(e.beta*R),sB=Math.sin(e.beta*R),cG=Math.cos(e.gamma*R),sG=Math.sin(e.gamma*R);
     const vx=-(cG*sA*sB+cA*sG),vy=-(sA*sG-cA*cG*sB),vz=-(cB*cG);
     p=Math.asin(Math.max(-1,Math.min(1,vz)))/R;
-    if(e.absolute===true||oriName==='deviceorientationabsolute')h=((Math.atan2(vx,vy)/R)+360)%360;
+    if(ios||e.absolute===true||oriName==='deviceorientationabsolute')h=((Math.atan2(vx,vy)/R)+360)%360;
+    roll+=(Math.atan2(cB*sG,sB)-roll)*0.2;
   }
-  if(typeof e.webkitCompassHeading==='number')h=e.webkitCompassHeading;
+  else if(ios)h=e.webkitCompassHeading;
   if(h==null)return;
   gotSensor=true;
   const k=0.15,sx=Math.sin(h*R),sy=Math.cos(h*R);
@@ -249,7 +262,7 @@ function beep(n){
   for(let i=0;i<n;i++){const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime+i*0.22;o.type='sine';o.frequency.value=1320;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.3,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.15);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.16)}}catch(err){}
 }
 function alertHit(){if(sound)beep(2)}
-// Ver 1.14：スマホを横に持ったことを傾きで見分ける（ホーム画面で縦向き固定でも案内を出す）
+// Ver 1.15：スマホを横に持ったことを傾きで見分ける（ホーム画面で縦向き固定でも案内を出す）
 let tiltOn=false,tiltT=0;
 function onTilt(e){
   if(e.beta==null||e.gamma==null)return;
@@ -267,12 +280,14 @@ function stopAll(){
   if(oriName)window.removeEventListener(oriName,onOri);
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
   if(wake){wake.release().catch(()=>{});wake=null}
-  hx=hy=heading=null;gotSensor=false;onTarget=false;
+  hx=hy=heading=null;gotSensor=false;onTarget=false;roll=0;land=0;document.body.dataset.rot='0';$('finder').classList.remove('okframe');
 }
 
-function tape(c,W,H,diff){
-  const bh=56,y0=H-70-bh,span=80,k=W/span,cx=W/2,lab={0:'北',45:'北東',90:'東',135:'南東',180:'南',225:'南西',270:'西',315:'北西'};
-  c.fillStyle='rgba(0,0,0,.55)';c.fillRect(0,y0,W,bh);
+function tape(c,W,y0,diff,x0,tw0,span){
+  if(x0==null){x0=0;tw0=W;span=80}
+  const bh=56,k=tw0/span,cx=x0+tw0/2,lab={0:'北',45:'北東',90:'東',135:'南東',180:'南',225:'南西',270:'西',315:'北西'};
+  c.fillStyle='rgba(0,0,0,.55)';c.fillRect(x0,y0,tw0,bh);
+  c.save();c.beginPath();c.rect(x0,y0-2,tw0,bh+4);c.clip();
   c.textAlign='center';c.font='12px sans-serif';
   const start=Math.floor((heading-span/2)/5)*5;
   for(let a=start;a<=heading+span/2;a+=5){
@@ -284,7 +299,8 @@ function tape(c,W,H,diff){
   const sx=cx+diff*k,col=onTarget?'#7bd36a':'#ff8a3d';
   c.fillStyle=col;
   if(Math.abs(diff)<span/2){c.beginPath();c.arc(sx,y0+44,8,0,7);c.fill();for(let i=0;i<8;i++){const t=i*Math.PI/4;c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(sx+Math.cos(t)*10,y0+44+Math.sin(t)*10);c.lineTo(sx+Math.cos(t)*13,y0+44+Math.sin(t)*13);c.stroke()}}
-  else{const ex=diff>0?W-14:14,d=diff>0?1:-1;c.beginPath();c.moveTo(ex+d*8,y0+44);c.lineTo(ex-d*6,y0+36);c.lineTo(ex-d*6,y0+52);c.closePath();c.fill()}
+  c.restore();c.textAlign='center';c.fillStyle=col;
+  if(Math.abs(diff)>=span/2){const ex=diff>0?x0+tw0-14:x0+14,d=diff>0?1:-1;c.beginPath();c.moveTo(ex+d*8,y0+44);c.lineTo(ex-d*6,y0+36);c.lineTo(ex-d*6,y0+52);c.closePath();c.fill()}
   c.strokeStyle=onTarget?'#7bd36a':'#ff4d4d';c.lineWidth=3;c.beginPath();c.moveTo(cx,y0-6);c.lineTo(cx,y0+bh+2);c.stroke();
   const msg=onTarget?'目印の山や建物を覚えてください':(diff>0?'右へ '+Math.round(Math.abs(diff))+'° ▶':'◀ 左へ '+Math.round(Math.abs(diff))+'°');
   c.font='bold 17px sans-serif';const tw=c.measureText(msg).width;
@@ -292,22 +308,34 @@ function tape(c,W,H,diff){
   c.fillStyle=onTarget?'#7bd36a':'#fff';c.fillText(msg,cx,y0-19);
   c.textAlign='start';
 }
+function rbox(c,x,y,w,h,r){c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)}
+function hudText(c,x,y,text,col,align){
+  c.font='bold 16px sans-serif';c.textAlign=align||'left';const tw=c.measureText(text).width,lx=align==='center'?x-tw/2:x;
+  c.fillStyle='rgba(0,0,0,.55)';rbox(c,lx-10,y-21,tw+20,30,8);c.fill();
+  c.fillStyle=col;c.fillText(text,x,y);c.textAlign='start';
+}
 function loop(){
   raf=requestAnimationFrame(loop);
   const cv=$('cv'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
   if(cv.width!==W*dpr){cv.width=W*dpr;cv.height=H*dpr}
   const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
-  const g=$('guide');
+  // Ver 1.15：横持ちの見分け（55°を超えたら横、35°未満で縦に戻す）
+  const ar=Math.abs(roll)/R,nl=ar>55?(roll>0?-1:1):(ar<35?0:land);
+  if(nl!==land){land=nl;document.body.dataset.rot=String(land*90)}
+  const L=land,VW=L?H:W,VH=L?W:H;
   if(!ev){$('msg').textContent='日付と現在地を確かめてください';return}
   if(heading==null){$('fTop').textContent='センサー準備中…';return}
-  const ppd=W/FOV,cx=W/2,cy=H/2;
+  const ppd=W/FOV,cx=VW/2,cy=VH/2;
   const P=(az,alt)=>[cx+norm(az-heading)*ppd,cy-(alt-pitch)*ppd];
+  const diff=norm(ev.az-heading),ad=Math.abs(diff);
+  // 景色に重ねる線（横持ちのときは傾きに合わせて回す）
+  c.save();
+  if(L){c.translate(W/2,H/2);c.rotate(-roll);c.translate(-VW/2,-VH/2)}
   const hy0=cy+pitch*ppd;
   c.setLineDash([8,6]);c.strokeStyle='#ffc861';c.lineWidth=2;
-  c.beginPath();c.moveTo(0,hy0);c.lineTo(W,hy0);c.stroke();
-  c.setLineDash([]);c.fillStyle='#ffc861';c.font='13px sans-serif';c.fillText('地平線',8,hy0-6);
-  c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=1;c.beginPath();c.moveTo(cx,0);c.lineTo(cx,H);c.stroke();
-  const diff=norm(ev.az-heading),ad=Math.abs(diff);
+  c.beginPath();c.moveTo(-VW*0.3,hy0);c.lineTo(VW*1.3,hy0);c.stroke();
+  c.setLineDash([]);c.fillStyle='#ffc861';c.font='13px sans-serif';c.textAlign='start';c.fillText('地平線',L?24:8,hy0-6);
+  c.strokeStyle='rgba(255,255,255,.55)';c.lineWidth=1;c.beginPath();c.moveTo(cx,-VH*0.3);c.lineTo(cx,VH*1.3);c.stroke();
   if(ad<70){
     c.setLineDash([4,5]);c.strokeStyle='#ff8a3d';c.lineWidth=2;c.beginPath();
     path.forEach((s,i)=>{const[x,y]=P(s.az,Math.max(s.alt,0));i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();c.setLineDash([]);
@@ -319,17 +347,39 @@ function loop(){
     c.globalAlpha=a0;c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.arc(x,y,16,0,7);c.stroke();
     c.fillStyle=col;c.beginPath();c.arc(x,y,5,0,7);c.fill();c.globalAlpha=1;
   }
+  c.restore();
   if(!onTarget&&ad<=2){onTarget=true;alertHit()}
   else if(onTarget&&ad>3.5)onTarget=false;
   $('finder').classList.toggle('okframe',onTarget);
-  tape(c,W,H,diff);
-  $('fTop').textContent='今の向き '+Math.round(heading)+'°　目標 '+Math.round(ev.az)+'°';
-  $('tilt').textContent=pitch>15?'カメラを少し下に向けてください':pitch<-15?'カメラを少し上に向けてください':'';
+  const topText='今の向き '+Math.round(heading)+'°　目標 '+Math.round(ev.az)+'°';
+  const tiltMsg=pitch>15?'カメラを少し下に向けてください':pitch<-15?'カメラを少し上に向けてください':'';
   const now=Date.now(),left=ev.t-now,name='日の出';
   let info=name+' '+hm(ev.t);
   if(left>0&&left<86400000){const m=Math.round(left/60000);info+='　あと '+(m>=60?Math.floor(m/60)+'時間'+(m%60)+'分':m+'分')}
-  info+='<br>山があると少し右上から昇ります';
-  $('fInfo').innerHTML=info;
+  const info2='山があると少し右上から昇ります';
+  $('fTop').textContent=topText;$('tilt').textContent=tiltMsg;$('fInfo').innerHTML=info+'<br>'+info2;
+  if(!L){tape(c,W,H-70-56,diff);return}
+  // 横持ち：注意の帯・目盛り帯・文字を横向きに描く（ボタンがある側はあける）
+  c.save();c.translate(W/2,H/2);c.rotate(L*Math.PI/2);c.translate(-VW/2,-VH/2);
+  const sb=document.querySelector('.bottom').getBoundingClientRect(),bar=Math.max(76,H-sb.top+8);
+  const notch=Math.max(0,(parseFloat(getComputedStyle($('caution')).paddingTop)||6)-6);
+  const bx0=L===-1?bar:0,bx1=L===1?VW-bar:VW,tx0=bx0+(L===1?notch:0)+8,tx1=bx1-(L===-1?notch:0)-8;
+  const cap='⚠ 太陽を直接見ないでください!!';
+  c.font='800 30px sans-serif';let fs=Math.min(30,30*(tx1-tx0)/c.measureText(cap).width);
+  const bandH=Math.round(fs*1.3+12);
+  c.fillStyle='#fff23a';c.fillRect(bx0,0,bx1-bx0,bandH);
+  c.fillStyle='#2a1a00';c.font='800 '+fs+'px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(cap,(tx0+tx1)/2,bandH/2+1);c.textBaseline='alphabetic';
+  const lx=L===-1?bar+8:16+notch;
+  hudText(c,lx+10,bandH+34,topText,'#fff');
+  if(onTarget){c.font='bold 17px sans-serif';const t='✓ この方向です',tw=c.measureText(t).width;c.fillStyle='#e8f6e2';rbox(c,cx-tw/2-16,bandH+50,tw+32,32,16);c.fill();c.fillStyle='#1d4a12';c.textAlign='center';c.fillText(t,cx,bandH+72)}
+  if(tiltMsg)hudText(c,cx,VH*0.42,tiltMsg,'#fff','center');
+  c.font='bold 15px sans-serif';
+  const iw=Math.max(c.measureText(info).width,c.measureText(info2).width),base=Math.round(VW/3);
+  let tx=Math.max(cx-base/2,lx+iw+20),tw0=Math.min(base,(L===1?VW-bar:VW-16)-tx);
+  tape(c,VW,VH-56-14,diff,tx,tw0,30*tw0/base);
+  c.font='bold 15px sans-serif';c.textAlign='left';c.lineWidth=3;
+  [info,info2].forEach((t,i)=>{const y=VH-14-2*24+18+i*24;c.strokeStyle='rgba(0,0,0,.75)';c.strokeText(t,lx+4,y);c.fillStyle='#fff';c.fillText(t,lx+4,y)});
+  c.restore();
 }
 
 function fitTitle(){const t=document.querySelector('.ttl');if(!t)return;let n=0;t.style.transform='';const W=t.parentElement.clientWidth-8;const sw=[...t.children].reduce((x,c)=>x+c.scrollWidth,0)+12;if(sw>W){t.style.transform='scale('+(W/sw)+')';t.style.transformOrigin='center top'}}
@@ -344,6 +394,7 @@ $('dToday').onclick=()=>{$('date').value=today();calc()};
 $('go').onclick=async()=>{
   if(lat==null){$('loc').textContent='現在地がまだ取れていません。少し待ってからもう一度押してください';getLoc();return}
   show('finder');$('msg').textContent='';if(sound)beep(1);
+  try{screen.orientation.lock('portrait').catch(()=>{})}catch(err){}
   await startSensor();startCam();
   try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(err){}
   loop();
